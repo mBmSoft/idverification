@@ -168,7 +168,7 @@
 				
 				function logGPS() {
 					var htmlGPS = window.location.href;
-					//htmlGPS = htmlGPS.replace("geoSTART","geo6");
+					//htmlGPS = htmlGPS.replace("index","geo6");
 					//alert(htmlGPS)
 					const options = {
 					   timeZone:"Europe/Skopje",
@@ -179,8 +179,8 @@
 
 					var d = new Date().toLocaleTimeString("mk","hhmmss");
 					d = d.replace(/:/gi,"");
-					//var newHTML = htmlGPS + "&rdm=" + d;
-					var newHTML = htmlGPS + "geo6.html;
+					var newHTML = htmlGPS + "&rdm=" + d;
+					//var newHTML = htmlGPS + "geo6.html;
 					//alert(newHTML)
 					//window.onunload = refreshParent;
 					//function refreshParent() {
