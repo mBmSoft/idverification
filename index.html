@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>Logiranje</title>
+		<meta name="viewport" content="width=device-width">
+		<meta charset=utf-8>
+	 
+		<script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+		
+		
+		
+		
+		<style>
+			h2 {
+				color: green;
+			}
+			button { 
+					width: 150px; 
+					height: 75px;
+				} 
+				input{
+					display: inline-block;
+					padding: 15px 10px;
+					line-height: 140%;
+					font-size: 30px;
+				}		
+		</style>
+		
+		<script type="text/javascript">
+		
+		//let Lat0;
+		//let Lon0;
+		var Lat0 = 0;
+		var Lon0 = 0;
+		
+		function resetGEO(){
+			//	navigator.geolocation.getCurrentPosition(position => {
+			//		Lat0 = position.coords.latitude;
+			//		Lon0 = position.coords.longitude;
+			//		//alert(Lat0);
+					// Show a map centered at latitude / longitude.
+			//	});
+			//}
+				var options0 = {
+					enableHighAccuracy: true,
+					timeout: 5000,
+					maximumAge: 0
+				}
+				if (navigator.geolocation) {
+					navigator.geolocation.getCurrentPosition(success0, error0, options0);
+					//navigator.geolocation.getCurrentPosition(success);
+				} else { 
+					x.innerHTML = "Geolocation is not supported by this browser.";
+				}					
+			}	
+				
+			function success0(position) {
+				crd0 = position.coords;
+				Lat0 = crd0.latitude;
+				Lon0 = crd0.longitude;
+			}
+			function error0(err) {
+				console.warn(`ERROR(${err.code}): ${err.message}`);
+			}
+		
+		window.onload = resetGEO();
+		</script>
+		
+		<script>
+			const queryString = window.location.search;
+			const urlParams = new URLSearchParams(queryString);
+			const vib_ID = urlParams.get('vib_id');
+			
+			document.getElementById("vib_ID").value = vib_ID;
+		</script>
+		<script>
+			$.get("https://ipinfo.io", function(response) {
+				z.innerHTML = "<b><font size='+1'>IP: " + response.ip + "</font></b>";
+			}, "json")
+		</script>
+		
+		<div id="qr-reader" style="width:500px"></div>
+		<div id="qr-reader-results"></div>
+		<script src="https://unpkg.com/html5-qrcode"></script>
+		<script src="beep.wav"></script>
+	
+		<script>
+			function docReady(fn) {
+				// see if DOM is already available
+				if (document.readyState === "complete" || document.readyState === "interactive") {
+					// call on next available tick
+					setTimeout(fn, 1);
+				} else {
+					document.addEventListener("DOMContentLoaded", fn);
+				}
+			}; 
+
+			docReady(function() {
+				var resultContainer = document.getElementById('qr-reader-results');
+				var lastResult, countResults = 0;
+				
+				var html5QrcodeScanner = new Html5QrcodeScanner(
+					"qr-reader", { fps: 10, qrbox: 250 });
+				
+				function onScanSuccess(decodedText, decodedResult) {
+					if (decodedText !== lastResult) {
+						++countResults;
+						lastResult = decodedText;
+						console.log(`Scan result = ${decodedText}`, decodedResult);
+			 
+						resultContainer.innerHTML += "<div>" + `[${countResults}] - ${decodedText}` + "</div>";
+						document.getElementById("myInput").value = decodedText;
+						play();
+						//beep_sound();
+						// Optional: To close the QR code scannign after the result is found
+						html5QrcodeScanner.clear();
+					}
+				}
+				
+				// Optional callback for error, can be ignored.
+				function onScanError(qrCodeError) {
+					// This callback would be called in case of qr code scan error or setup error.
+					// You can avoid this callback completely, as it can be very verbose in nature.
+				}
+				
+				html5QrcodeScanner.render(onScanSuccess, onScanError);
+			});
+			function play() {
+				var audio = new Audio(
+				'https://media.geeksforgeeks.org/wp-content/uploads/20190531135120/beep.mp3');
+				audio.play();
+			};
+		
+			function beep_sound() {
+        var audio = new Audio(
+		'https://7cc9-77-29-76-42.ngrok.io/beep.wav');
+        audio.play();
+    };
+		</script>		
+	</head>
+
+	<body>
+		<center>
+			<h2>Connection Type:</h2>
+			<p id="conntype"></p>
+			
+			<h2>WI-FI IP:</h2>
+			<p id="wifiid"></p>
+					
+			<h2>Внесете код за авторизација:</h2>
+			<input type=text id="myInput" value=123 size="+20" width="148" height="148" autofocus onclick="this.select()" >
+	
+			<h2>Кликнете на копчето за да ги добите Вашите ГПС координати:</h2>
+		
+			<p id="demo"></p>
+			
+			<button onclick="prazno()"><b><font size="+1">Логирање<br><i>со WI-FI</i></font></b></button>
+			
+			<button onclick="logGPS();"><b><font size="+1">Логирање<br><i>со Г П С</i></font></b></button>
+			
+			<script>
+				
+					function prazno() {
+				};
+				
+				function logGPS() {
+					var htmlGPS = window.location.href;
+					htmlGPS = htmlGPS.replace("geoSTART","geo6");
+					//alert(htmlGPS)
+					const options = {
+					   timeZone:"Europe/Skopje",
+					   hour:  "2-digit",
+					   minute: "2-digit",
+					   second: "2-digit"
+					};
+
+					var d = new Date().toLocaleTimeString("mk","hhmmss");
+					d = d.replace(/:/gi,"");
+					var newHTML = htmlGPS + "&rdm=" + d;
+					//alert(newHTML)
+					//window.onunload = refreshParent;
+					//function refreshParent() {
+					  //window.opener.location.reload(true);
+					window.open(newHTML);
+					  //window.location.href = newHTML;
+					//}		
+					//window.close();
+					setTimeout(function() {
+						//window.onunload = refreshParent;
+						//function refreshParent() {
+						  //window.opener.location.reload(true);
+						  //window.location.href = "https://www.google.com";
+						//}		
+						window.close();
+					}, 500);
+				}					
+				
+				
+			</script>
+			
+			<script>
+				var Lat = 0;
+				var Lon = 0;
+				var url = "";
+				var	body = "";
+				var crd = "";
+				var Acc = "";
+			
+				var z = document.getElementById("wifiid");
+	
+				var y = document.getElementById("conntype");
+				var conn = window.navigator.connection.type
+				y.innerHTML = "<b>Type: " + conn + "</b>";
+    									
+				
+				async function asyncCall() {
+					getLocation();
+					eraseText();	
+					await kraj();
+					setTimeout(function() {
+						window.onunload = refreshParent;
+						function refreshParent() {
+						  //window.opener.location.reload(true);
+						  window.location.href = "https://www.google.com";
+						}		
+						window.close();
+					}, 10000);
+				}
+			</script>
+
+			<script>
+				var er = document.getElementById("myInput");
+				var x = document.getElementById("demo");
+		
+				function getLocation() {
+					var options = {
+						enableHighAccuracy: true,
+						timeout: 5000,
+						maximumAge: 0
+					}
+					if (navigator.geolocation) {
+						navigator.geolocation.getCurrentPosition(success, error, options);
+						//navigator.geolocation.getCurrentPosition(success);
+					} else { 
+						x.innerHTML = "Geolocation is not supported by this browser.";
+					}					
+				}
+				
+				function success(position) {
+					crd = position.coords;
+					Lat = crd.latitude;
+					Lon = crd.longitude;
+					Acc = Math.round(crd.accuracy);
+
+					x.innerHTML =  'Your start position is:' + 
+							"<br>Latitude: " + Lat0 + 
+							"<br>Longitude: " + Lon0 +  
+							"<br>Your current position is:" + 
+							"<br>Latitude: " + Lat + 
+							"<br>Longitude: " + Lon +  
+							"<br>More or less <b>" + Acc + "</b> meters." +
+							"<br>ID: " + vib_ID;
+			
+					body = {
+						"html_GPSlocation" : 
+							{
+								"vib_id" : vib_ID, 
+								"Latitude" : Lat, 
+								"Longitude" : Lon
+							}
+					};
+					sendMessages3(body);
+				}
+				
+				function error(err) {
+					console.warn(`ERROR(${err.code}): ${err.message}`);
+				}
+
+				async function sendMessages3(param3) {
+					const promise = await new Promise(function(resolve, reject) {
+
+						var	param = {
+							"html_GPSlocation" : 
+							{
+								"vib_id" : vib_ID, 
+								"Latitude" : Lat, 
+								"Longitude" : Lon
+							}
+						}
+						$.ajax({
+							url: 'https://89yafqwskc.execute-api.eu-south-1.amazonaws.com/PROD/Adrijano',
+							type: 'POST',
+							data: JSON.stringify(param3),
+							async: true,
+							success: function(data) { 
+								//alert('data: ' + data)
+								//resolve('data: ' + data)
+								//alert(data)
+							},
+							error: function (err) {
+								//alert("greska: " + err)
+								//reject("greska: " + err)
+								//return "200";
+								resolve(true)
+							}
+						})
+					
+					})
+					return promise 					
+				} 
+				
+				async function sendMessages2(Lat,Lon) {
+					//const promise = await new Promise(function(resolve, reject) {
+				//alert("start sending message")
+						
+						var	param = {
+							"html_GPSlocation" : 
+							{
+								"vib_id" : vib_ID, 
+								"Latitude" : Lat, 
+								"Longitude" : Lon
+							}
+						}
+						$.ajax({
+							url: 'https://89yafqwskc.execute-api.eu-south-1.amazonaws.com/PROD/Adrijano',
+							type: 'POST',
+							data: JSON.stringify(param),
+							async: true,
+							success: function(data) { 
+								//alert('data: ' + data)
+								//resolve('data: ' + data)
+								//alert(data)
+							},
+							error: function (err) {
+								//alert("greska: " + err)
+								//reject("greska: " + err)
+								//return "200";
+								resolve(true)
+							}
+						})
+					
+					}
+					//)
+					//return promise 					
+				//} 	
+
+				async function sendMessages() {
+					const promise = await new Promise(function(resolve, reject) {
+				//alert("start sending message")
+						var	param = {
+							"html_GPSlocation" : 
+							{
+								"vib_id" : vib_ID, 
+								"Latitude" : Lat, 
+								"Longitude" : Lon
+							}
+						}
+						$.ajax({
+							url: 'https://89yafqwskc.execute-api.eu-south-1.amazonaws.com/PROD/Adrijano',
+							type: 'POST',
+							data: JSON.stringify(param),
+							async: true,
+							success: function(data) { 
+								//alert('data: ' + data)
+								//resolve('data: ' + data)
+								//alert(data)
+							},
+							error: function (err) {
+								//alert("greska: " + err)
+								//reject("greska: " + err)
+								//return "200";
+								resolve(true)
+							}
+						})
+					
+					})
+					return promise 					
+				} 
+				
+				function eraseText() {
+						er.value = "";
+				}
+				
+				async function kraj() {
+					const promise = await new Promise(function(resolve, reject) {
+						deleteAllCookies();
+						//alert("izbishani kukis");
+						//window.location.href = "https://www.google.com";
+						url = "viber://chat";
+				//alert(url)
+						window.location.href = url;
+						resolve(true)
+					})
+				    return promise 
+				}
+
+				function deleteAllCookies() {
+					var cookies = document.cookie.split(";");
+
+					for (var i = 0; i < cookies.length; i++) {
+						var cookie = cookies[i];
+						var eqPos = cookie.indexOf("=");
+						//alert(eqPos > -1 ? cookie.substr(0, eqPos) : cookie); 
+						var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+						//alert(i);
+						document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+					}
+				}
+	
+			</script>
+	<!--		
+			<h3>КОНТРОЛА:</h3>
+				<p id="dem"></p>
+				<script>
+					var y = document.getElementById("dem");			
+								
+								var options = {
+					  enableHighAccuracy: true,
+					  timeout: 5000,
+					  maximumAge: 0
+					};
+				
+					function success(pos) {
+						var crd = pos.coords;
+						y.innerHTML = 'Your current position is:' + 
+							`<br>Latitude : ${crd.latitude}` +
+							`<br>Longitude: ${crd.longitude}` + 
+							'<br>More or less <b>' + crd.accuracy + '</b> meters.'
+					}
+				
+					function error(err) {
+					  console.warn(`ERROR(${err.code}): ${err.message}`);
+					}
+				
+					navigator.geolocation.getCurrentPosition(success, error, options);
+	-->				
+				</script> 
+		</center>
+	</body>
+</html>
+
+
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>Geolocation</title>
+	</head>
+	<style>
+		#mapdemo{
+			width: 500px;
+			height: 500px;
+		}
+	</style>
+	<body>
+		<center>
+			<h2>Отвори GOOGLE MAPS:</h2>
+			<!-- <p>In this Example we are going to see exact location on Google map, where actually we are.</p> -->
+			<button onclick="getlocation();"><b><font size="+1">Мојата Локација на <i>Google Maps</i></font></b></button>
+			<div id="mapdemo">
+			</div>
+			<script src="https://maps.google.com/maps/api/js?sensor=false">
+			</script>
+			<script type="text/javascript">
+				function getlocation(){
+					if(navigator.geolocation){
+						navigator.geolocation.getCurrentPosition(showPos, showErr);
+					}
+					else{
+						alert("Sorry! your Browser does not support Geolocation API")
+					}
+				}
+				
+				// Current Poistion on Google Map
+				function showPos(position){
+					latt = position.coords.latitude;
+					long = position.coords.longitude;
+					var lattlong = new google.maps.LatLng(latt, long);
+					var myOptions = {
+						center: lattlong,
+						zoom: 15,
+						mapTypeControl: true,
+						navigationControlOptions: {style:google.maps.NavigationControlStyle.SMALL}
+					}
+					var maps = new google.maps.Map(document.getElementById("mapdemo"), myOptions);
+					var markers =
+						new google.maps.Marker({position:lattlong, map:maps, title:"Your position on map!"});
+				}
+				function showErr(error) {
+					switch(error.code){
+					case error.PERMISSION_DENIED:
+						alert("User or Device not allow to accept your request for Geolocation.");
+						break;
+					case error.POSITION_UNAVAILABLE:
+						alert("USer or Device exact location information is currently unavailable.");
+						break;
+					case error.TIMEOUT:
+						alert("Requested request is getting time out .");
+						break;
+					case error.UNKNOWN_ERROR:
+						alert("Something unknown error is accrued.");
+						break;
+					}
+				}        
+			</script>
+		</center>
+	</body>
+</html>
+
+
+
+
