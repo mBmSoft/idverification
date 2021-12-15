@@ -69,6 +69,7 @@
 		</script>
 		
 		<script>
+			alert(window.location.href);
 			const queryString = window.location.search;
 			const urlParams = new URLSearchParams(queryString);
 			const vib_ID = urlParams.get('vib_id');
@@ -167,7 +168,6 @@
 				
 				function logGPS() {
 					var htmlGPS = window.location.href;
-					alert(htmlGPS);
 					htmlGPS = htmlGPS.replace("geoSTART","geo6");
 					//alert(htmlGPS)
 					const options = {
@@ -386,7 +386,7 @@
 				
 				async function kraj() {
 					const promise = await new Promise(function(resolve, reject) {
-						deleteAllCookies();
+//deleteAllCookies();
 						//alert("izbishani kukis");
 						//window.location.href = "https://www.google.com";
 						url = "viber://chat";
